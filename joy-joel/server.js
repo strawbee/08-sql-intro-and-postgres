@@ -39,7 +39,7 @@ app.use(express.static('./public'));
 // REVIEW: Routes for requesting HTML resources
 app.get('/new', (request, response) => {
   // COMMENT: What number(s) of the full-stack-diagram.png image correspond to the following line of code? Which method of article.js is interacting with this particular piece of `server.js`? What part of CRUD is being enacted/managed by this particular piece of code?
-  // app.get() is making a request to the server (step 2). response.sendFile corresponds to step 5, where the server is sending a response back to the view. The part of CRUD corresponding to this piece of code is R, which stands for read.
+  // app.get() is making a request to the server (step 2). response.sendFile corresponds to step 5, where the server is sending a response back to the view. It's not interacting with a method from article.js. The part of CRUD corresponding to this piece of code is R, which stands for read.
   response.sendFile('new.html', {root: './public'});
 });
 
@@ -47,7 +47,7 @@ app.get('/new', (request, response) => {
 // REVIEW: Routes for making API calls to use CRUD Operations on our database
 app.get('/articles', (request, response) => {
   // COMMENT: What number(s) of the full-stack-diagram.png image correspond to the following line of code? Which method of article.js is interacting with this particular piece of `server.js`? What part of CRUD is being enacted/managed by this particular piece of code?
-  // The following line of code is querying the database, which corresponds to step 3 in the full stack diagram. The lines after that with the .then method corresponds to step 4, since it's sending back a result from the database to the server. It also corresponds to Read in CRUD.
+  // The following line of code is querying the database, which corresponds to step 3 in the full stack diagram. This corresponds with Articles.fetchAll(). The lines after that with the .then method corresponds to step 4, since it's sending back a result from the database to the server. It also corresponds to Read in CRUD.
   client.query('SELECT * FROM articles')
     .then(function(result) {
       response.send(result.rows);
@@ -59,7 +59,7 @@ app.get('/articles', (request, response) => {
 
 app.post('/articles', (request, response) => {
   // COMMENT: What number(s) of the full-stack-diagram.png image correspond to the following line of code? Which method of article.js is interacting with this particular piece of `server.js`? What part of CRUD is being enacted/managed by this particular piece of code?
-  // This is step 3 in the full stack diagram. The server is querying the database and inserting data into the database. Then the server sends a response confirmation stating 'insert complete' to Node/terminal (step 4). It corresponds to Create in CRUD.
+  // This is step 3 in the full stack diagram.This relates to Article.prototype.insertRecord(). The server is querying the database and inserting data into the database. Then the server sends a response confirmation stating 'insert complete' to Node/terminal (step 4). It corresponds to Create in CRUD.
   client.query(
     `INSERT INTO
     articles(title, author, "authorUrl", category, "publishedOn", body)
@@ -84,7 +84,7 @@ app.post('/articles', (request, response) => {
 
 app.put('/articles/:id', (request, response) => {
   // COMMENT: What number(s) of the full-stack-diagram.png image correspond to the following line of code? Which method of article.js is interacting with this particular piece of `server.js`? What part of CRUD is being enacted/managed by this particular piece of code?
-  // It corresponds to step 5 in the full stack diagram, the response from the server to the view. This also relates to the Update part of CRUD.
+  // It corresponds to step 5 in the full stack diagram, the response from the server to the view.This corresponds with Article.prototype.updateRecord(). This also relates to the Update part of CRUD.
   client.query(
     `UPDATE articles
     SET
@@ -111,7 +111,7 @@ app.put('/articles/:id', (request, response) => {
 
 app.delete('/articles/:id', (request, response) => {
   // COMMENT: What number(s) of the full-stack-diagram.png image correspond to the following line of code? Which method of article.js is interacting with this particular piece of `server.js`? What part of CRUD is being enacted/managed by this particular piece of code?
-  // This is step 3 of the full stack diagram; the server is querying the database to delete an article. The .then() response is step 4, which is sending a message to the server. This corresponds to the Delete part of CRUD.
+  // This is step 3 of the full stack diagram; the server is querying the database to delete an article. This corresponds with Article.prototype.deleteRecord(). The .then() response is step 4, which is sending a message to the server. This corresponds to the Delete part of CRUD.
   client.query(
     `DELETE FROM articles WHERE article_id=$1;`,
     [request.params.id]
@@ -126,7 +126,7 @@ app.delete('/articles/:id', (request, response) => {
 
 app.delete('/articles', (request, response) => {
   // COMMENT: What number(s) of the full-stack-diagram.png image correspond to the following line of code? Which method of article.js is interacting with this particular piece of `server.js`? What part of CRUD is being enacted/managed by this particular piece of code?
-  // This is step 3 of the full stack diagram; the server is querying the database to delete all articles. The .then() response is step 4, which is sending a message to the server. This corresponds to the Delete part of CRUD.
+  // This is step 3 of the full stack diagram; the server is querying the database to delete all articles. This corresponds with Article.truncateTable(). The .then() response is step 4, which is sending a message to the server. This corresponds to the Delete part of CRUD.
   client.query(
     'DELETE FROM articles;'
   )
@@ -151,7 +151,7 @@ app.listen(PORT, () => {
 ////////////////////////////////////////
 function loadArticles() {
   // COMMENT: What number(s) of the full-stack-diagram.png image correspond to the following line of code? Which method of article.js is interacting with this particular piece of `server.js`? What part of CRUD is being enacted/managed by this particular piece of code?
-  // It corresponds to step 3 in the full stack diagram, where the server is querying the database for the number of articles existing. If no articles exist, it takes the articles from our hackerIpsum.json and populates each article into the table. In CRUD, it is the Read portion.
+  // It corresponds to step 3 in the full stack diagram, where the server is querying the database for the number of articles existing. This corresponds with Article.loadAll(). If no articles exist, it takes the articles from our hackerIpsum.json and populates each article into the table. In CRUD, it is the Read portion.
   client.query('SELECT COUNT(*) FROM articles')
     .then(result => {
     // REVIEW: result.rows is an array of objects that Postgres returns as a response to a query.
@@ -175,7 +175,7 @@ function loadArticles() {
 
 function loadDB() {
   // COMMENT: What number(s) of the full-stack-diagram.png image correspond to the following line of code? Which method of article.js is interacting with this particular piece of `server.js`? What part of CRUD is being enacted/managed by this particular piece of code?
-  // This is step 3 of the full stack diagram. We are querying the database to find out of the table exists, and if it doesn't we instruct it to create it. This corresponds to the Read and Create parts of CRUD, as we are getting information about if the table exists, but if it doesn't, we are creating it.
+  // This is step 3 of the full stack diagram. We are querying the database to find out of the table exists, and if it doesn't we instruct it to create it.This does not correspond to a method in article.js. This corresponds to the Read and Create parts of CRUD, as we are getting information about if the table exists, but if it doesn't, we are creating it.
   client.query(`
     CREATE TABLE IF NOT EXISTS articles (
       article_id SERIAL PRIMARY KEY,
